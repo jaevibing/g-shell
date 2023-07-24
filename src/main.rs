@@ -7,6 +7,7 @@ use std::io::stdin;
 use std::process;
 
 fn main(){
+    let version = include_str!("VERSION");
     loop {
         let current_dir = env::current_dir()
             .unwrap()
@@ -51,7 +52,9 @@ fn main(){
             },
             "help" => {
                 let helpfile = include_str!("HELPFILE");
-                println!("{helpfile}");
+                let helpheader = "--- g-shell {version} pre-alpha ---";
+                let helpend = "--- end help ---";
+                println!("{helpheader}\n\n{helpfile}\n\n{helpend}");
             },
             "end" => {
                 println!("exiting with code 0x0100");
