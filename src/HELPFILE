@@ -1,0 +1,14 @@
+--- g-shell v0.0.1 alpha ---
+
+help {command} {page no}
+    opens the basic index of commands or args for
+    a specified command.
+
+cd [directory]
+    changes working directory to specified
+    directory
+
+cat [file]
+    reads file contents to terminal
+
+--- end help ---
