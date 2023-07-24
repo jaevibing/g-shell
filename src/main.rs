@@ -1,4 +1,6 @@
+use std::env;
 use std::io::Write;
+use std::path::Path;
 use std::process::Command;
 use std::io::stdout;
 use std::io::stdin;
@@ -22,14 +24,31 @@ fn main(){
         let args = &command_split[1..];
 
         match keyword{
+            "cwd" => {
+                match env::current_dir() {
+                    Ok(current_dir) => {
+                        let current_dir_str = current_dir.to_string_lossy().into_owned();
+                        println!("{}", current_dir_str);
+                    }
+                    Err(e) => {
+                        eprintln!("error getting working directory: {}", e);
+                    }
+                }
+            },
             "help" => {
                 let helpfile = include_str!("HELPFILE");
                 println!("{helpfile}");
-            }
+            },
             "end" => {
                 println!("exiting with code 0x0100");
                 process::exit(0x0100);
-            }
+            },
+            "cd" => {
+                let root = Path::new(args[0]);
+                if let Err(e) = env::set_current_dir(&root) {
+                    eprintln!("error running cd: {}", e);
+                }
+            },
             keyword => {
                 let mut child = Command::new(keyword)
                     .args(args)

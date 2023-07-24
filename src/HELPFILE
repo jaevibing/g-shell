@@ -14,4 +14,7 @@ cat [file]
 gsh
     provides info on the current release of gsh
 
+cwd
+    get current working directory
+
 --- end help ---
