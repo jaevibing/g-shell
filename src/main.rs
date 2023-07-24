@@ -7,7 +7,7 @@ use std::process;
 
 fn main(){
     loop {
-        print!("> ");
+        print!("gsh> ");
         let _ = stdout().flush();
 
         let mut command = String::new();
@@ -23,8 +23,8 @@ fn main(){
 
         match keyword{
             "help" => {
-                let helpfile = fs::read_to_string("src/HELPFILE").expect("Failed to read the file.");
-                println!("{}",helpfile);
+                let helpfile = include_str!("HELPFILE");
+                println!("{helpfile}");
             }
             "end" => {
                 println!("exiting with code 0x0100");

@@ -1,4 +1,4 @@
---- g-shell v0.0.1 alpha ---
+--- g-shell v0.0.1 pre-alpha ---
 
 help {command} {page no}
     opens the basic index of commands or args for
@@ -10,5 +10,8 @@ cd [directory]
 
 cat [file]
     reads file contents to terminal
+
+gsh
+    provides info on the current release of gsh
 
 --- end help ---
