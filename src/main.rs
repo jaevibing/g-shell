@@ -7,14 +7,27 @@ use std::io::stdin;
 use std::fs;
 use std::process;
 
-fn main(){
+fn cmain(){
     loop {
-        print!("gsh> ");
+        let current_dir = env::current_dir()
+            .unwrap()
+            .to_string_lossy()
+            .to_string();
+        print!("gsh [{}] > ", current_dir);
         let _ = stdout().flush();
 
         let mut command = String::new();
         stdin().read_line(&mut command)
-            .expect("Failed to read in command");
+            .expect("Could not read input command.");
+        
+        /* 
+        get ready for some high quality autism in 
+        the form of ansi text commands
+        */
+
+        print!("\u{1b}[1;A"); // move cursor back to beginning of output
+        print!("\r\x1b[K"); // delete output 
+        print!("> {command}"); // reprint command without bells and whistles
 
         command = command.replace("\n",""); // replace new line character in command, just cause
 
@@ -27,11 +40,13 @@ fn main(){
             "cwd" => {
                 match env::current_dir() {
                     Ok(current_dir) => {
-                        let current_dir_str = current_dir.to_string_lossy().into_owned();
+                        let current_dir_str = current_dir
+                            .to_string_lossy()
+                            .into_owned();
                         println!("{}", current_dir_str);
                     }
                     Err(e) => {
-                        eprintln!("error getting working directory: {}", e);
+                        println!("error getting working directory: {}", e);
                     }
                 }
             },
