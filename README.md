@@ -6,13 +6,21 @@ g-shell is currently in a very early pre-alpha to create a working prototype tha
 any additions or improvements are highly encouraged
 #### how to use
 in this stage of development, no official releases have been made, if you wish to test g-shell, you should clone the repo and compile it
-```git clone https://github.com/jaevibing/g-shell.git```
-```cd g-shell```
-```rustc src/main.rs -o g-shell```
-```./g-shell```
+```
+git clone https://github.com/jaevibing/g-shell.git
+```
+```
+cd g-shell
+```
+```
+rustc src/main.rs -o g-shell
+```
+```
+./g-shell
+```
 #### commands
-```help``` prints the helpfile to the terminal
-```end``` kills the g-shell process
+`help` - prints the helpfile to the terminal
+`end` - kills the g-shell process
 #### roadmap for development
-* implementing mainstay unix commands (man, kill, mkdir, etc.)
+* implementing mainstay unix commands (man, sudo, kill, etc.)
 * make the shell able to be installed as a shell
