@@ -4,7 +4,6 @@ use std::path::Path;
 use std::process::Command;
 use std::io::stdout;
 use std::io::stdin;
-use std::fs;
 use std::process;
 
 fn main(){
@@ -13,7 +12,7 @@ fn main(){
             .unwrap()
             .to_string_lossy()
             .to_string();
-        print!("gsh [{}] > ", current_dir);
+        print!("\ngsh [{}] > ", current_dir);
         let _ = stdout().flush();
 
         let mut command = String::new();
@@ -27,7 +26,7 @@ fn main(){
 
         print!("\u{1b}[1;A"); // move cursor back to beginning of output
         print!("\r\x1b[K"); // delete output 
-        print!("> {command}"); // reprint command without bells and whistles
+        print!("\n> {command}"); // reprint command without bells and whistles
 
         command = command.replace("\n",""); // replace new line character in command, just cause
 
@@ -70,7 +69,7 @@ fn main(){
                     .spawn()
                     .unwrap();
 
-                child.wait();
+                child.wait().expect("Error encountered, be concerned!");
             }
         }
     }
