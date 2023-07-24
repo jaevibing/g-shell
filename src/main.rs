@@ -7,7 +7,7 @@ use std::io::stdin;
 use std::fs;
 use std::process;
 
-fn cmain(){
+fn main(){
     loop {
         let current_dir = env::current_dir()
             .unwrap()
