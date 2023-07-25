@@ -1,4 +1,5 @@
 mod autoupdate;
+mod download;
 
 use std::env;
 use std::io::Write;
@@ -25,9 +26,11 @@ fn main(){
         let mut choice = String::new();
         stdin().read_line(&mut choice)
             .expect("Could not read input command.");
-        match choice.as_str() {
-            "Y" => autoupdate::update(),
-            _ => (),
+        if choice == "Y" {
+            download::update(gitversion.as_str());
+        }
+        else {
+            println!("Avoiding update, you will be prompted again on next startup.\nYou can update in the terminal with the gsh-update command.")
         }
     }
     loop {

@@ -29,7 +29,3 @@ pub async fn checkForUpdate() -> Result<String, Error> {
 
     Ok(response_text)
 }
-
-pub fn update(){
-
-}
