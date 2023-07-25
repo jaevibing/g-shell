@@ -30,7 +30,7 @@ user_can_sudo() {
 export PATH="$GSH/bin:$PATH"
 
 if cat /etc/shells | grep gsh; then
-
+  export PATH="$PATH"
 else
   if user_can_sudo; then
     sudo echo "$GSH/bin/gsh" >> /etc/shells
