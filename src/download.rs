@@ -1,4 +1,6 @@
 use std::io::Cursor;
+
+use crate::setToHomeDir;
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
  
 async fn fetch_url(url: String, file_name: String) -> Result<()> {
@@ -10,7 +12,9 @@ async fn fetch_url(url: String, file_name: String) -> Result<()> {
 }
  
 pub async fn update(ver: &str) {
+    setToHomeDir(true, ".gsh/bin");
     let binaryurl = "https://github.com/jaevibing/g-shell/releases/download/".to_string() + ver + "/gsh";
     fetch_url(binaryurl, "gsh".to_string()).await.unwrap();
-    println!("New binary downloaded")
+    println!("New binary downloaded, restarting...");
+    
 }

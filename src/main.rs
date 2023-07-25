@@ -13,11 +13,11 @@ use std::process;
 use tokio::runtime::Runtime;
 use colored::Colorize;
 
-fn setToHomeDir(gsh: bool){
+pub fn setToHomeDir(gsh: bool, pathFromHome: &str){
     match env::home_dir() {
         Some(mut home_dir) => {
             if gsh{
-                home_dir.push(".gsh");
+                home_dir.push(pathFromHome);
             }
             if let Err(e) = env::set_current_dir(home_dir) {
                 eprintln!("Error setting current directory: {}", e);
@@ -36,7 +36,7 @@ fn main(){
     // let version = "v0.0.3"; // debug version number for testing autoupdate
     let mut gitversion = String::new();
     let rt = Runtime::new().unwrap();
-    setToHomeDir(false);
+    setToHomeDir(false, ".gsh");
     let mut history = File::open(".gsh_history");
     match rt.block_on(autoupdate::checkForUpdate()) {
         Ok(r) => gitversion = r,
@@ -50,11 +50,11 @@ fn main(){
         stdin().read_line(&mut choice)
             .expect("Could not read input command.");
         if choice == "Y" {
-            setToHomeDir(true);
+            setToHomeDir(true, ".gsh");
             download::update(gitversion.as_str());
         }
         else {
-            println!("Avoiding update, you will be prompted again on next startup.\nYou can update in the terminal with the gsh-update command.")
+            println!("Avoiding update, you will be prompted again on next startup.\nYou can update in the terminal with the gsh-update command.\n")
         }
     }
     loop {
@@ -120,7 +120,7 @@ fn main(){
                     println!("You are already on the latest version of g-shell.\n")
                 }
                 else{
-                    setToHomeDir(true);
+                    setToHomeDir(true, ".gsh");
                     download::update(gitversion.as_str());
                 }
             },

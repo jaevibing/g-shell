@@ -40,3 +40,5 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/jaevibing/g-shell/master/t
 * adding plugin support
 * adding base themes
 * making the update checker *truly* asynchronous
+* add environment variables
+* cycle through past commands with up and down arrow keys
