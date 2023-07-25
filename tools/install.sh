@@ -29,6 +29,16 @@ user_can_sudo() {
 # add .gsh/bin to path
 export PATH="$GSH/bin:$PATH"
 
+if cat /etc/shells | grep gsh; then
+
+else
+  if user_can_sudo; then
+    sudo echo "$GSH/bin/gsh" >> /etc/shells
+  else
+    echo "Error: you do not have sudo permissions, please change your /etc/shells file manually to contain $GSH/bin/gsh and restart this script"
+    exit 0
+fi
+
 # change shell with chsh, force sudo if can sudo = true
 if user_can_sudo; then
     sudo -k chsh "$GSH/bin/gsh" "$USER"
