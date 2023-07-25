@@ -1,4 +1,6 @@
 # g-shell
+[![Source](https://github.com/jaevibing/g-shell/actions/workflows/rust.yml/badge.svg)](https://github.com/jaevibing/g-shell/actions/workflows/rust.yml)
+
 g-shell is an open-source rust-based compiled unix-like shell meant for performance, compatability, customisation, modding and community.
 ### information about the project
 g-shell is currently in a very early pre-alpha to create a working prototype that can be deployed as a proper shell before new features and ideas can be implemented
