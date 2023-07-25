@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # setup config files and directories in home directory
 mkdir $HOME/.gsh
