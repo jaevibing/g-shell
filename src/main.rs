@@ -33,6 +33,7 @@ fn setToHomeDir(gsh: bool){
 
 fn main(){
     let version = include_str!("VERSION");
+    // let version = "v0.0.3"; // debug version number for testing autoupdate
     let mut gitversion = String::new();
     let rt = Runtime::new().unwrap();
     setToHomeDir(false);
