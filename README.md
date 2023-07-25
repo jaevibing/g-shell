@@ -1,11 +1,17 @@
 # g-shell
 g-shell is an open-source rust-based compiled unix-like shell meant for performance, compatability, customisation, modding and community.
-#### information about the project
+### information about the project
 g-shell is currently in a very early pre-alpha to create a working prototype that can be deployed as a proper shell before new features and ideas can be implemented
-#### pull requests, forks and issues
+### pull requests, forks and issues
 any additions or improvements are highly encouraged
-#### how to use
-in this stage of development, no official releases have been made, if you wish to test g-shell, you should clone the repo and compile it
+### how to use
+you can test g-shell by either testing the binary or fully installing the shell
+
+you can test the binary by either downloading the latest stable binary from the releases tab:
+```
+gsh$(curl -s https://api.github.com/repos/jaevibing/g-shell/releases/latest | grep "gsh" | cut -d : -f 2,3 | tr -d \" | wget -qi -)
+```
+or compiling the latest version from the source like this:
 ```
 git clone https://github.com/jaevibing/g-shell.git
 ```
@@ -13,14 +19,22 @@ git clone https://github.com/jaevibing/g-shell.git
 cd g-shell
 ```
 ```
-rustc src/main.rs -o g-shell
+cargo build
 ```
 ```
-./g-shell
+./target/debug/gsh
 ```
-#### commands
+
+if you wish to install g-shell you must run the shell script file. this can be done with this command:
+```
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/jaevibing/g-shell/master/tools/install.sh)"
+```
+### commands
 `help` - prints the helpfile to the terminal
+
 `end` - kills the g-shell process
-#### roadmap for development
-* implementing mainstay unix commands (man, sudo, kill, etc.)
-* make the shell able to be installed as a shell
+### roadmap for development
+* making it more customizable
+* adding plugin support
+* adding base themes
+* making the update checker *truly* asynchronous
