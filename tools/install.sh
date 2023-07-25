@@ -37,6 +37,7 @@ else
   else
     echo "Error: you do not have sudo permissions, please change your /etc/shells file manually to contain $GSH/bin/gsh and restart this script"
     exit 0
+  fi
 fi
 
 # change shell with chsh, force sudo if can sudo = true
