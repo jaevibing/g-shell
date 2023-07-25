@@ -5,7 +5,7 @@ g-shell is an open-source rust-based compiled unix-like shell meant for performa
 ### information about the project
 g-shell is currently in a very early pre-alpha to create a working prototype that can be deployed as a proper shell before new features and ideas can be implemented
 ### pull requests, forks and issues
-any additions or improvements are highly encouraged
+any additions or improvements are highly encouraged, due to the pre-alpha nature of the current releases, bugs, missing features and issues are expected so report them when found.
 ### how to use
 you can test g-shell by either testing the binary or fully installing the shell
 

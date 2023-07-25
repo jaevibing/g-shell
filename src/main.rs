@@ -2,6 +2,8 @@ mod autoupdate;
 mod download;
 
 use std::env;
+use std::fs;
+use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::process::Command;
@@ -11,10 +13,30 @@ use std::process;
 use tokio::runtime::Runtime;
 use colored::Colorize;
 
+fn setToHomeDir(gsh: bool){
+    match env::home_dir() {
+        Some(mut home_dir) => {
+            if gsh{
+                home_dir.push(".gsh");
+            }
+            if let Err(e) = env::set_current_dir(home_dir) {
+                eprintln!("Error setting current directory: {}", e);
+            } else {
+                ()
+            }
+        }
+        None => {
+            eprintln!("Failed to get home directory.");
+        }
+    }
+}
+
 fn main(){
     let version = include_str!("VERSION");
     let mut gitversion = String::new();
     let rt = Runtime::new().unwrap();
+    setToHomeDir(false);
+    let mut history = File::open(".gsh_history");
     match rt.block_on(autoupdate::checkForUpdate()) {
         Ok(r) => gitversion = r,
         Err(e) => (),
@@ -27,6 +49,7 @@ fn main(){
         stdin().read_line(&mut choice)
             .expect("Could not read input command.");
         if choice == "Y" {
+            setToHomeDir(true);
             download::update(gitversion.as_str());
         }
         else {
@@ -38,7 +61,7 @@ fn main(){
             .unwrap()
             .to_string_lossy()
             .to_string();
-        print!("\ngsh [{}] > ", current_dir);
+        print!("gsh [{}] > ", current_dir);
         let _ = stdout().flush();
 
         let mut command = String::new();
@@ -52,7 +75,7 @@ fn main(){
 
         print!("\u{1b}[1;A"); // move cursor back to beginning of output
         print!("\r\x1b[K"); // delete output 
-        print!("\n> {command}"); // reprint command without bells and whistles
+        print!("> {command}"); // reprint command without bells and whistles
 
         command = command.replace("\n",""); // replace new line character in command, just cause
 
@@ -78,7 +101,7 @@ fn main(){
             "help" => {
                 let helpfile = include_str!("HELPFILE");
                 let helpheader = "--- g-shell ".to_string() + version + " pre-alpha ---";
-                let helpend = "--- end help ---";
+                let helpend = "--- end help ---\n";
                 println!("\n{helpheader}\n\n{helpfile}\n\n{helpend}");
             },
             "end" => {
@@ -89,6 +112,15 @@ fn main(){
                 let root = Path::new(args[0]);
                 if let Err(e) = env::set_current_dir(&root) {
                     eprintln!("error running cd: {}", e);
+                }
+            },
+            "gsh-update" => {
+                if gitversion == version{
+                    println!("You are already on the latest version of g-shell.\n")
+                }
+                else{
+                    setToHomeDir(true);
+                    download::update(gitversion.as_str());
                 }
             },
             keyword => {
