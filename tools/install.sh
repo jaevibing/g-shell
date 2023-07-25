@@ -26,7 +26,7 @@ user_can_sudo() {
 }
 
 # add .gsh/bin to path
-export $PATH="$GSH/bin:$PATH"
+export PATH="$GSH/bin:$PATH"
 
 # change shell with chsh, force sudo if can sudo = true
 if user_can_sudo; then
