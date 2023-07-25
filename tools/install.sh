@@ -14,7 +14,7 @@ curl -s https://api.github.com/repos/jaevibing/g-shell/releases/latest \
 | cut -d : -f 2,3 \
 | tr -d \" \
 | wget -qi -
-export $GSH="$HOME/.gsh"
+export GSH="$HOME/.gsh"
 
 # check if user can sudo, stolen directly from ohmyzsh's install.sh
 user_can_sudo() {
