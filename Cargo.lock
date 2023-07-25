@@ -270,7 +270,7 @@ checksum = "b6c80984affa11d98d1b88b66ac8853f143217b399d3c74116778ff8fdb4ed2e"
 
 [[package]]
 name = "gsh"
-version = "0.0.3"
+version = "0.0.5"
 dependencies = [
  "colored",
  "futures",
