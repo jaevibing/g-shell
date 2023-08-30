@@ -24,7 +24,7 @@ pub async fn checkForUpdate() -> Result<String, reqwest::Error> {
         return Ok::<String, reqwest::Error>(include_str!("docs/VERSION").to_string()); // return OK if cache isnt old enough yet
     }
 
-    let url = "https://raw.githubusercontent.com/jaevibing/g-shell/master/src/VERSION";
+    let url = "https://raw.githubusercontent.com/jaevibing/g-shell/master/src/docs/VERSION";
     let response = reqwest::get(url).await?;
 
     if response.status().is_success() {
