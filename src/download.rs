@@ -16,5 +16,4 @@ pub async fn update(ver: &str) {
     let binaryurl = "https://github.com/jaevibing/g-shell/releases/download/".to_string() + ver + "/gsh";
     fetch_url(binaryurl, "gsh".to_string()).await.unwrap();
     println!("New binary downloaded, restarting...");
-    
 }

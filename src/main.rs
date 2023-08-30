@@ -1,17 +1,12 @@
+#![allow(non_snake_case)]
 mod autoupdate;
 mod download;
+mod history;
+mod saveLastCheck;
 
-use std::env;
-use std::fs;
-use std::fs::File;
-use std::io::Write;
-use std::path::Path;
-use std::process::Command;
-use std::io::stdout;
-use std::io::stdin;
-use std::process;
 use tokio::runtime::Runtime;
 use colored::Colorize;
+use std::{env, io::{Write, stdout, stdin}, path::Path, process::{Command, self}, time::{SystemTime, UNIX_EPOCH}};
 
 pub fn setToHomeDir(gsh: bool, pathFromHome: &str){
     match env::home_dir() {
@@ -32,16 +27,15 @@ pub fn setToHomeDir(gsh: bool, pathFromHome: &str){
 }
 
 fn main(){
-    let version = include_str!("VERSION");
+    let version = include_str!("docs/VERSION");
     // let version = "v0.0.3"; // debug version number for testing autoupdate
-    let mut gitversion = String::new();
     let rt = Runtime::new().unwrap();
     setToHomeDir(false, ".gsh");
-    let mut history = File::open(".gsh_history");
-    match rt.block_on(autoupdate::checkForUpdate()) {
-        Ok(r) => gitversion = r,
-        Err(e) => (),
-    }
+    let gitversion = match rt.block_on(autoupdate::checkForUpdate()) {
+        Ok(r) => r,
+        Err(_) => version.to_string(), // if check fails assume latest version
+    };
+    drop(rt);
     if gitversion != version {
         println!("You are not currently running the latest version of g-shell.");
         println!("{} -> {}", version.red(), gitversion.green());
@@ -49,14 +43,21 @@ fn main(){
         let mut choice = String::new();
         stdin().read_line(&mut choice)
             .expect("Could not read input command.");
-        if choice == "Y" {
+        print!("{choice}");
+        if choice.contains("Y") {
             setToHomeDir(true, ".gsh");
             download::update(gitversion.as_str());
         }
         else {
-            println!("Avoiding update, you will be prompted again on next startup.\nYou can update in the terminal with the gsh-update command.\n")
+            println!("Avoiding update, you will be prompted again on next startup.\nYou can update in the terminal with the gsh-update command.\n");
+            let value = gitversion.clone() + ":" + &SystemTime::now().duration_since(UNIX_EPOCH)
+                                                    .expect("oopsie poopsie a friggin time error beitch")
+                                                    .as_secs()
+                                                    .to_string();
+            let _ = saveLastCheck::saveLastCheck(value);
         }
     }
+
     loop {
         let current_dir = env::current_dir()
             .unwrap()
@@ -77,6 +78,8 @@ fn main(){
         print!("\u{1b}[1;A"); // move cursor back to beginning of output
         print!("\r\x1b[K"); // delete output 
         print!("> {command}"); // reprint command without bells and whistles
+
+        let _ = history::writeToHistory(&command);
 
         command = command.replace("\n",""); // replace new line character in command, just cause
 
@@ -100,7 +103,7 @@ fn main(){
                 }
             },
             "help" => {
-                let helpfile = include_str!("HELPFILE");
+                let helpfile = include_str!("docs/HELPFILE");
                 let helpheader = "--- g-shell ".to_string() + version + " pre-alpha ---";
                 let helpend = "--- end help ---\n";
                 println!("\n{helpheader}\n\n{helpfile}\n\n{helpend}");

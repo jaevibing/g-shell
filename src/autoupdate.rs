@@ -1,31 +1,35 @@
 extern crate reqwest;
 extern crate tokio;
-use reqwest::Error;
+use std::{fs, path::Path, env, time::{SystemTime, UNIX_EPOCH}};
 
-pub async fn checkForUpdate() -> Result<String, Error> {
-    // Create a client to make the request
-    let client = reqwest::Client::new();
-
-    // The URL you want to send the GET request to
-    let url = "https://raw.githubusercontent.com/jaevibing/g-shell/master/src/VERSION";
-
-    // Send the GET request and await the response
-    let response = client.get(url).send().await?;
-
-    let mut response_text = String::new();
-
-    // Check if the request was successful (status code in the 2xx range)
-    if response.status().is_success() {
-        // Read the response body as a string
-        response_text = response.text().await?;
-    } else {
-        // Handle error cases, e.g., print the status code and reason phrase
-        println!(
-            "Request failed with status code: {} - {}",
-            response.status(),
-            response.status().canonical_reason().unwrap_or("Unknown Reason")
-        );
+pub async fn checkForUpdate() -> Result<String, reqwest::Error> {
+    let mut cachePassed: bool = true;
+    match fs::metadata(Path::new(&env::var("HOME").unwrap()).join(".gsh/.gsh_cache")){
+        Ok(_) => {
+            let cachePath = Path::new(&env::var("HOME").unwrap()).join(".gsh/.gsh_cache");
+            let cachedContents = fs::read_to_string(cachePath).expect("oops");
+            let cachedUnix: u32 = cachedContents.split(":").last().unwrap().parse().unwrap();
+            let currentUnix = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();
+            if (currentUnix - u64::from(cachedUnix)) > 432000 { // 5 days in seconds
+                ()
+            }
+            else {
+                cachePassed = false;
+            }
+        },
+        Err(_) => (),
     }
 
-    Ok(response_text)
+    if !cachePassed{
+        return Ok::<String, reqwest::Error>(include_str!("docs/VERSION").to_string()); // return OK if cache isnt old enough yet
+    }
+
+    let url = "https://raw.githubusercontent.com/jaevibing/g-shell/master/src/VERSION";
+    let response = reqwest::get(url).await?;
+
+    if response.status().is_success() {
+        Ok(response.text().await?)
+    } else {
+        Err(response.error_for_status_ref().err().unwrap())
+    }
 }
