@@ -63,7 +63,7 @@ fn main(){
             .unwrap()
             .to_string_lossy()
             .to_string();
-        print!("gsh [{}] > ", current_dir);
+        print!("gsh [{}] $ ", current_dir);
         let _ = stdout().flush();
 
         let mut command = String::new();
@@ -77,7 +77,7 @@ fn main(){
 
         print!("\u{1b}[1;A"); // move cursor back to beginning of output
         print!("\r\x1b[K"); // delete output 
-        print!("> {command}"); // reprint command without bells and whistles
+        print!("$ {command}"); // reprint command without bells and whistles
 
         let _ = history::writeToHistory(&command);
 
