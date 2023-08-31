@@ -6,6 +6,7 @@ mkdir $HOME/.gsh/bin
 touch $HOME/.gsh_profile
 touch $HOME/.gshrc
 touch $HOME/.gsh_history
+touch $HOME/.gsh_cache
 
 # download latest gsh binary to .gsh
 cd $HOME/.gsh/bin
