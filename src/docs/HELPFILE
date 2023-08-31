@@ -9,7 +9,7 @@ cd [directory]
 cat [file]
     reads file contents to terminal
 
-gsh
+gsh-info
     provides info on the current release of gsh
 
 cwd

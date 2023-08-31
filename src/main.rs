@@ -35,7 +35,9 @@ fn main(){
         Ok(r) => r,
         Err(_) => version.to_string(), // if check fails assume latest version
     };
+
     drop(rt);
+
     if gitversion != version {
         println!("You are not currently running the latest version of g-shell.");
         println!("{} -> {}", version.red(), gitversion.green());
@@ -85,8 +87,10 @@ fn main(){
 
         let command_split : Vec<&str> = command.split(' ').collect();
 
-        let keyword = command_split[0];
-        let args = &command_split[1..];
+        let keyword = command_split.clone()[0];
+        let args = &command_split.clone()[1..];
+
+        drop(command_split);
 
         match keyword{
             "cwd" => {
@@ -95,6 +99,7 @@ fn main(){
                         let current_dir_str = current_dir
                             .to_string_lossy()
                             .into_owned();
+                        drop(current_dir);
                         println!("{}", current_dir_str);
                     }
                     Err(e) => {
@@ -127,6 +132,9 @@ fn main(){
                     download::update(gitversion.as_str());
                 }
             },
+            "gsh-info" => {
+                print!("gsh pre-alpha {}\n", version);
+            }
             keyword => {
                 let mut child = Command::new(keyword)
                     .args(args)

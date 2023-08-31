@@ -42,3 +42,4 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/jaevibing/g-shell/master/t
 * making the update checker *truly* asynchronous
 * add environment variables
 * cycle through past commands with up and down arrow keys
+* moving cursor with l+r keys
