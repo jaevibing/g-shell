@@ -1,5 +1,7 @@
 # g-shell
 [![Source](https://github.com/jaevibing/g-shell/actions/workflows/rust.yml/badge.svg)](https://github.com/jaevibing/g-shell/actions/workflows/rust.yml)
+![GitHub](https://img.shields.io/github/license/jaevibing/g-shell)
+
 
 g-shell is an open-source rust-based compiled unix-like shell meant for performance, compatability, customisation, modding and community.
 ### information about the project
@@ -34,7 +36,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/jaevibing/g-shell/master/t
 ### commands
 `help` - prints the helpfile to the terminal
 
-`end` - kills the g-shell process
+`exit` - kills the g-shell process
 ### roadmap for development
 * making it more customizable
 * adding plugin support
