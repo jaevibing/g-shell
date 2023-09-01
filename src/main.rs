@@ -68,7 +68,7 @@ fn main(){
     }
 
     thread::spawn({
-        let termout = Arc::clone(&termout);
+        let termout = Arc::clone(&termout); // share termout with thread
         move || {
             keyFunctions::getKeyPresses(termout);
         }

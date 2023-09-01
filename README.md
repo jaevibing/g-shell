@@ -13,7 +13,7 @@ you can test g-shell by either testing the binary or fully installing the shell
 
 you can test the binary by either downloading the latest stable binary from the releases tab:
 ```
-gsh$(curl -s https://api.github.com/repos/jaevibing/g-shell/releases/latest | grep "gsh" | cut -d : -f 2,3 | tr -d \" | wget -qi -)
+curl -s https://api.github.com/repos/jaevibing/g-shell/releases/latest | grep "gsh" | cut -d : -f 2,3 | tr -d \" | wget -qi -
 ```
 or compiling the latest version from the source like this:
 ```
@@ -23,10 +23,7 @@ git clone https://github.com/jaevibing/g-shell.git
 cd g-shell
 ```
 ```
-cargo build
-```
-```
-./target/debug/gsh
+cargo run
 ```
 
 if you wish to install g-shell you must run the shell script file. this can be done with this command:
@@ -37,11 +34,16 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/jaevibing/g-shell/master/t
 `help` - prints the helpfile to the terminal
 
 `exit` - kills the g-shell process
-### roadmap for development
-* making it more customizable
-* adding plugin support
-* adding base themes
+### roadmap for v0.1
+* base features added
+* checking the path for binaries
 * making the update checker *truly* asynchronous
-* add environment variables
 * cycle through past commands with up and down arrow keys
 * moving cursor with l+r keys
+* a full devlog file
+### nice to haves for future releases
+* customisation
+* cool themes
+* configuration
+* optimisation
+* install from package managers (homebrew, apt and pacman planned, more in future potentially)
