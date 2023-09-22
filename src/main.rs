@@ -5,7 +5,6 @@ mod history;
 mod saveLastCheck;
 
 use termion::{raw::IntoRawMode, input::TermRead, event::Key};
-use colored::Colorize;
 use std::{env, io::{Write, stdin}, path::Path, process::{Command, self}, time::{SystemTime, UNIX_EPOCH}};
 
 pub fn setToHomeDir(gsh: bool, pathFromHome: &str){
@@ -41,7 +40,7 @@ fn main(){
 
     if gitversion != version {
         writeln!(termout, "You are not currently running the latest version of g-shell.");
-        writeln!(termout, "{} -> {}", version.red(), gitversion.green());
+        writeln!(termout, "\033[31m{}\033[0m -> \033[32m{}\033[0m", version, gitversion);
         writeln!(termout, "Do you wish to update? (Y/n)");
         let mut choice = String::new();
         stdin().read_line(&mut choice)
@@ -141,40 +140,13 @@ fn main(){
         let args = &command_split.clone()[1..];
 
         drop(command_split);
-        let mut clear = false;
 
-        match keyword{
-            "cwd" => {
-                match env::current_dir() {
-                    Ok(current_dir) => {
-                        let current_dir_str = current_dir
-                            .to_string_lossy()
-                            .into_owned();
-                        drop(current_dir);
-                        writeln!(termout, "{}", current_dir_str);
-                    }
-                    Err(e) => {
-                        writeln!(termout, "error getting working directory: {}", e);
-                    }
-                }
-            },
+        match keyword {
             "help" => {
                 let helpfile = include_str!("docs/HELPFILE");
                 let helpheader = "--- g-shell ".to_string() + version + " pre-alpha ---";
                 let helpend = "--- end help ---\n";
                 writeln!(termout, "\n{helpheader}\n\n{helpfile}\n\n{helpend}");
-            },
-            "exit" => {
-                writeln!(termout, "exiting with code 0x0100");
-                process::exit(0x0100);
-            },
-            #[allow(deprecated)]
-            "cd" => {
-                let directory = args[0].replace("~", &env::home_dir().unwrap().to_string_lossy().into_owned());
-                let root = Path::new(&directory);
-                if let Err(e) = env::set_current_dir(&root) {
-                    eprintln!("error running cd: {}", e);
-                }
             },
             "gsh-update" => {
                 if gitversion == version{
@@ -185,30 +157,67 @@ fn main(){
                     download::update(gitversion.as_str());
                 }
             },
-            "gsh-info" => {
-                write!(termout, "gsh pre-alpha {}\n", version);
-            },
-            "clear-history" =>{
-                history::clearHistory();
-            },
-            keyword => {
-                if keyword == "clear"{
-                    clear = true;
-                }
-                let child = Command::new(keyword)
-                    .args(args)
-                    .output()
-                    .expect("Failed to execute command");
-
-                let stdout_child = String::from_utf8_lossy(&child.stdout).replace("\n", "\n\r");
-
-                write!(termout, "{}", stdout_child);
-
-                termout.flush();
+            _ => {
+                let out = match_command(keyword, args);
+                write!(termout, "{}", out);
             }
         }
-        if !clear {
-            write!(termout, "\n\r");
+
+        
+    }
+}
+
+fn match_command(keyword: &str, args: &[&str]) -> String {
+    let mut clear = false;
+    let mut output = String::new();
+
+    match keyword{
+        "cwd" => {
+            match env::current_dir() {
+                Ok(current_dir) => {
+                    let current_dir_str = current_dir
+                        .to_string_lossy()
+                        .into_owned();
+                    drop(current_dir);
+                    output.push_str(current_dir_str.as_str());
+                }
+                Err(e) => {
+                    eprintln!("error getting working directory: {}", e);
+                }
+            }
+        },
+        "exit" => {
+            process::exit(0x0100);
+        },
+        #[allow(deprecated)]
+        "cd" => {
+            let directory = args[0].replace("~", &env::home_dir().unwrap().to_string_lossy().into_owned());
+            let root = Path::new(&directory);
+            if let Err(e) = env::set_current_dir(&root) {
+                eprintln!("error running cd: {}", e);
+            }
+        },
+        
+        "clear-history" =>{
+            history::clearHistory();
+        },
+        keyword => {
+            if keyword == "clear"{
+                clear = true;
+            }
+            let child = Command::new(keyword)
+                .args(args)
+                .output()
+                .expect("Failed to execute command");
+
+            let stdout_child = String::from_utf8_lossy(&child.stdout).replace("\n", "\n\r");
+
+            output.push_str(stdout_child.as_str());
         }
     }
+    if !clear {
+        output.push_str("\n\r");
+    }
+
+    return output;
 }
