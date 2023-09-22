@@ -5,9 +5,8 @@ mod history;
 mod saveLastCheck;
 
 use termion::{raw::IntoRawMode, input::TermRead, event::Key};
-use tokio::runtime::Runtime;
 use colored::Colorize;
-use std::{env, io::{Write, stdout, stdin}, path::Path, process::{Command, self}, time::{SystemTime, UNIX_EPOCH}};
+use std::{env, io::{Write, stdin}, path::Path, process::{Command, self}, time::{SystemTime, UNIX_EPOCH}};
 
 pub fn setToHomeDir(gsh: bool, pathFromHome: &str){
     #[allow(deprecated)]
@@ -34,14 +33,11 @@ fn main(){
 
     let version = include_str!("docs/VERSION");
     // let version = "v0.0.3"; // debug version number for testing autoupdate
-    let rt = Runtime::new().unwrap();
     setToHomeDir(false, ".gsh");
-    let gitversion = match rt.block_on(autoupdate::checkForUpdate()) {
+    let gitversion = match autoupdate::checkForUpdate() {
         Ok(r) => r,
         Err(_) => version.to_string(), // if check fails assume latest version
     };
-
-    drop(rt);
 
     if gitversion != version {
         writeln!(termout, "You are not currently running the latest version of g-shell.");
@@ -145,6 +141,7 @@ fn main(){
         let args = &command_split.clone()[1..];
 
         drop(command_split);
+        let mut clear = false;
 
         match keyword{
             "cwd" => {
@@ -191,7 +188,13 @@ fn main(){
             "gsh-info" => {
                 write!(termout, "gsh pre-alpha {}\n", version);
             },
+            "clear-history" =>{
+                history::clearHistory();
+            },
             keyword => {
+                if keyword == "clear"{
+                    clear = true;
+                }
                 let child = Command::new(keyword)
                     .args(args)
                     .output()
@@ -203,6 +206,9 @@ fn main(){
 
                 termout.flush();
             }
+        }
+        if !clear {
+            write!(termout, "\n\r");
         }
     }
 }

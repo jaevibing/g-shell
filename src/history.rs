@@ -11,6 +11,20 @@ pub fn writeToHistory(command: &str) -> std::io::Result<()>{
 
     let mut historyFile = OpenOptions::new().append(true).open(historyPath)?;
     historyFile.write_all(command.as_bytes())?;
+    historyFile.write_all("\n".as_bytes())?;
+
+    Ok(())
+}
+
+pub fn clearHistory() -> std::io::Result<()> {
+    let historyPath = Path::new(&env::var("HOME").unwrap()).join(".gsh/.gsh_history");
+    match fs::metadata(historyPath.clone()) { // check the history file exists or not
+        Ok(_) => (),
+        Err(_) => {
+            return Ok(())
+        },
+    }
+    let _ = OpenOptions::new().truncate(true).open(historyPath)?;
 
     Ok(())
 }
