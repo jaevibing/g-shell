@@ -4,7 +4,7 @@ mod download;
 mod history;
 mod saveLastCheck;
 
-use termion::{raw::IntoRawMode, input::TermRead, async_stdin, event::Key};
+use termion::{raw::IntoRawMode, input::TermRead, event::Key};
 use tokio::runtime::Runtime;
 use colored::Colorize;
 use std::{env, io::{Write, stdout, stdin}, path::Path, process::{Command, self}, time::{SystemTime, UNIX_EPOCH}};
@@ -71,18 +71,16 @@ fn main(){
             .to_string_lossy()
             .to_string();
         write!(termout, "gsh [{}] $ ", current_dir);
-        let _ = stdout().flush();
+        termout.flush();
 
-        let mut fuck = false;
         let mut cursor_pos = 0;
         let mut command = String::new();
 
-        while !fuck {
+        loop {
             if let Some(Ok(key_event)) = stdin().keys().next() {
                 match key_event {
                     Key::Char('\n') => {
                         write!(termout, "\n");
-                        fuck = true;
                         break;
                     }
                     Key::Left => {
@@ -91,8 +89,8 @@ fn main(){
                         }
                         else {
                             write!(termout, "\x1b[D");
+                            cursor_pos -= 1;
                         }
-                        cursor_pos -= 1;
                     }
                     Key::Right => {
                         if cursor_pos == command.as_str().len() {
@@ -100,8 +98,8 @@ fn main(){
                         }
                         else {
                             write!(termout, "\x1b[C");
+                            cursor_pos += 1;
                         }
-                        cursor_pos += 1;
                     }
                     Key::Up => {
                         write!(termout, "\x07");
@@ -114,14 +112,17 @@ fn main(){
                         cursor_pos += 1;
                         write!(termout, "{}", n);
                     }
+                    Key::Backspace | Key::Delete => {
+                        command.truncate(command.as_str().len()-1);
+                        write!(termout, "\r\x1b[K");
+                        write!(termout, "gsh [{}] $ {}", env::current_dir().unwrap().to_string_lossy().to_string(), command);
+                        cursor_pos -= 1;
+                    }
                     _ => todo!(),
                 }
             }
     
-            // You can add your rendering or game logic here.
-    
-            // Be sure to flush the stdout to ensure changes are visible.
-            stdout().flush();
+            termout.flush();
         }
         
         /* 
@@ -131,9 +132,10 @@ fn main(){
 
         write!(termout, "\u{1b}[1;A"); // move cursor back to beginning of output
         write!(termout, "\r\x1b[K"); // delete output 
-        write!(termout, "$ {command}"); // reprint command without bells and whistles
+        write!(termout, "$ {command}\n\r"); // reprint command without bells and whistles
+        termout.flush();
 
-        let _ = history::writeToHistory(&command);
+        history::writeToHistory(&command);
 
         command = command.replace("\n",""); // replace new line character in command, just cause
 
@@ -190,12 +192,16 @@ fn main(){
                 write!(termout, "gsh pre-alpha {}\n", version);
             },
             keyword => {
-                let mut child = Command::new(keyword)
+                let child = Command::new(keyword)
                     .args(args)
-                    .spawn()
-                    .unwrap();
+                    .output()
+                    .expect("Failed to execute command");
 
-                child.wait().expect("Error encountered, be concerned!");
+                let stdout_child = String::from_utf8_lossy(&child.stdout).replace("\n", "\n\r");
+
+                write!(termout, "{}", stdout_child);
+
+                termout.flush();
             }
         }
     }
